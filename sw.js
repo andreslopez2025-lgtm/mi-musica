@@ -1,6 +1,6 @@
 // Service worker: guarda la "carcasa" de la app para que abra rápido e instale.
 // No toca la música ni las búsquedas (van directo a internet).
-const CACHE = 'mimusica-v1';
+const CACHE = 'mimusica-v2';
 const ARCHIVOS = ['./', 'index.html', 'app.js', 'musica.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

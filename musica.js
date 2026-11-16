@@ -49,6 +49,20 @@ function getJSON(url) {
 const azar = a => a[Math.floor(Math.random() * a.length)];
 
 // ---------- Jamendo ----------
+// Jamendo responde "0 resultados" al azar (~1 de cada 3 veces) a búsquedas que sí tienen: reintenta y no guardes el vacío.
+async function jamendoJSON(url) {
+  let j;
+  for (let i = 0; i < 5; i++) {
+    if (i) await new Promise(r => setTimeout(r, 250));
+    j = await getJSON(url);
+    if (j.headers?.status !== 'success') throw new Error('Jamendo: ' + (j.headers?.error_message || 'error'));
+    const r = j.results;
+    if (Array.isArray(r) ? r.length : Object.values(r || {}).some(v => v?.length)) return j;
+    cache.delete(url);
+  }
+  return j;
+}
+
 async function jamendo(c) {
   if (!c.clave) return [];
   const g = genero(c.genero);
@@ -61,8 +75,7 @@ async function jamendo(c) {
   if (c.etiquetas?.length) p.set('fuzzytags', [p.get('fuzzytags'), ...c.etiquetas.map(t => t.replace(/[^a-z0-9]/g, ''))].filter(Boolean).join(' '));
   if (c.desde || c.hasta) p.set('datebetween', `${c.desde || 1900}-01-01_${c.hasta || ANIO}-12-31`);
   if (c.artista) p.set('artist_name', c.artista);
-  const j = await getJSON(`${JM}/tracks/?${p}`);
-  if (j.headers?.status !== 'success') throw new Error('Jamendo: ' + (j.headers?.error_message || 'error'));
+  const j = await jamendoJSON(`${JM}/tracks/?${p}`);
   return j.results.filter(r => r.audio).map(r => ({
     id: 'jm' + r.id, src: 'jm', title: r.name, artist: r.artist_name, album: r.album_name || '',
     img: r.image || r.album_image || '', url: r.audio, dur: +r.duration || 0,
@@ -194,7 +207,7 @@ export async function sugerirArtistas(texto, clave) {
   if (norm(texto).length < 2) return [];
   const t = encodeURIComponent(texto);
   const rs = await Promise.allSettled([
-    clave ? getJSON(`${JM}/autocomplete/?client_id=${clave}&format=json&entity=artists&limit=8&prefix=${t}`)
+    clave ? jamendoJSON(`${JM}/autocomplete/?client_id=${clave}&format=json&entity=artists&limit=8&prefix=${t}`)
       .then(j => (j.results?.artists || []).map(a => a.name ?? a)) : [],
     getJSON(`${AU}/users/search?query=${t}&limit=8&app_name=${APP}`)
       .then(j => (j.data || []).filter(u => u.track_count > 0).sort((a, b) => b.follower_count - a.follower_count).map(u => u.name)),

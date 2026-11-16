@@ -5,7 +5,7 @@ App web personal para escuchar música libre, completa y sin anuncios. No pide c
 **Abrir la app:** https://andreslopez2025-lgtm.github.io/mi-musica/
 
 La música sale de:
-- **Jamendo**, la fuente principal. Necesita una clave gratis (ver abajo).
+- **Jamendo**, la fuente principal: música independiente con licencia libre.
 - **Audius**, música que publican sus propios artistas.
 - **Internet Archive**, solo grabaciones de dominio público o con licencia Creative Commons (aquí está lo más antiguo).
 
@@ -23,11 +23,8 @@ La música sale de:
 3. Baja y toca **Añadir a pantalla de inicio**, y luego **Añadir**.
 4. Abre "Mi Música" desde el ícono nuevo.
 
-## Activar Jamendo (una sola vez)
-1. Entra a https://devportal.jamendo.com y crea una cuenta gratis.
-2. En **My Applications**, crea una aplicación. De nombre ponle "Mi Música" y, si te pide una web, pon el link de la app.
-3. Copia el **Client ID**.
-4. En la app, toca el engranaje ⚙ (arriba a la derecha), pega la clave y toca **Guardar**. Debe decir "Jamendo está activo ✓".
+## Jamendo
+Ya viene activado: la app trae incluido el Client ID de la cuenta de programador (usuario jaimeandreslopez2025 en devportal.jamendo.com). Si algún día quieres cambiarlo, toca el engranaje ⚙, pega otro Client ID y toca **Guardar**. El "Client Secret" de esa cuenta no se usa y no debe compartirse.
 
 ## Cómo se usa
 - **Descubrir**: elige un género, unos años o un artista. La lista se actualiza sola.
@@ -39,5 +36,5 @@ La música sale de:
 
 ## Para el programador
 - No necesita instalar nada para compilar: son archivos estáticos (`index.html`, `app.js`, `musica.js`, `sw.js`).
-- Prueba rápida: `node prueba.mjs [CLIENT_ID_JAMENDO]`.
-- Para dejar la clave de Jamendo fija en el código, ponla en `CLAVE_JAMENDO` dentro de `app.js`.
+- Prueba rápida: `node prueba.mjs c31bfecb`.
+- El Client ID está en `CLAVE_JAMENDO`, dentro de `app.js`.

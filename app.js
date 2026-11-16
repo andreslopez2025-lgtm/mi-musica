@@ -1,8 +1,8 @@
 // app.js — pantallas y reproductor. La música y los gustos viven en musica.js.
 import { GENEROS, FUENTES, buscar, sugerirArtistas, probarJamendo, votar, mix as armarMix, paraTi, mezclar, gustosVacios, unicos } from './musica.js';
 
-// Si quieres, deja aquí tu clave de Jamendo para no tener que escribirla en Ajustes.
-const CLAVE_JAMENDO = '';
+// Client ID de Jamendo (es público por diseño: va en cada petición). Se puede cambiar en Ajustes.
+const CLAVE_JAMENDO = 'c31bfecb';
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`);
@@ -404,6 +404,7 @@ audio.addEventListener('error', () => {
   if (!audio.dataset.id || audio.dataset.id !== cola[pos]?.id) return;
   if (++fallos > 4) { fallos = 0; pintarPlay(); return toast('Varias canciones no cargaron. Revisa tu conexión.'); }
   toast('Esta canción no cargó, paso a la siguiente');
+  document.querySelectorAll(`.fila[data-id="${CSS.escape(audio.dataset.id)}"]`).forEach(f => f.remove()); // que no se vuelva a tocar
   siguiente();
 });
 audio.addEventListener('play', () => { if (ms) ms.playbackState = 'playing'; pintarPlay(); posicion(); });
