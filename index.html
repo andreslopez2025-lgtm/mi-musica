@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi Música</title>
+<meta name="theme-color" content="#0b0b10">
+<meta name="description" content="Música libre y sin anuncios, para mí.">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mi Música">
+<style>
+:root{--bg:#0b0b10;--s1:#16161e;--s2:#252531;--ln:#1e1e28;--tx:#f3f3f7;--mu:#a3a3b3;--ac:#ff4d6d;--ac2:#ffb547;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg)}
+body{margin:0;color:var(--tx);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(150px + env(safe-area-inset-bottom));overscroll-behavior-y:none}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none!important}
+svg.i{width:24px;height:24px;fill:currentColor;flex:none}
+header{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px 8px 16px;background:var(--bg)}
+header h1{font-size:24px;margin:0;flex:1;letter-spacing:-.3px}
+main{padding:0 16px;max-width:760px;margin:0 auto}
+h2{font-size:20px;margin:22px 0 6px}
+.nota{color:var(--mu);font-size:14px;margin:0 0 10px}
+.et{display:block;color:var(--mu);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;margin:14px 0 6px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 -16px;padding-left:16px;padding-right:16px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips.envolver{flex-wrap:wrap;margin:0;padding:0}
+.chip{flex:none;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--s2);background:var(--s1);font-size:15px}
+.chip.on{background:var(--tx);color:var(--bg);border-color:var(--tx);font-weight:600}
+.rango{display:flex;gap:10px;align-items:center;margin-top:8px}
+.rango label{flex:1;display:flex;align-items:center;gap:8px;color:var(--mu);font-size:14px}
+select,input[type=search],input[type=text]{flex:1;width:100%;min-height:48px;border-radius:12px;border:1px solid var(--s2);background:var(--s1);padding:0 12px;font-size:16px}
+.grandes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 4px}
+.grande{display:flex;align-items:center;justify-content:center;gap:8px;min-height:64px;border-radius:18px;border:0;font-size:17px;font-weight:700;background:var(--ac);color:#fff;padding:0 10px}
+.grande.alt{background:var(--s1);border:2px solid var(--s2);color:var(--tx)}
+.grande.alt.on{border-color:var(--ac2);color:var(--ac2)}
+.grande:active{transform:scale(.97)}
+.boton{min-height:48px;border-radius:14px;border:1px solid var(--s2);background:var(--s1);padding:0 16px;display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.fila{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--ln);cursor:pointer}
+.fila img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--s2);flex:none}
+.fila.sonando .txt b{color:var(--ac)}
+.txt{flex:1;min-width:0}
+.txt b,.txt small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txt b{font-weight:600}
+.txt small{color:var(--mu);font-size:13px}
+.ico{width:44px;height:44px;border:0;background:none;color:var(--mu);display:grid;place-items:center;border-radius:50%;flex:none;padding:0}
+.ico:active{background:var(--s2)}
+.ico.on{color:var(--ac)}
+.aviso{background:#2a1f10;border:1px solid #5a4116;color:#ffd79a;border-radius:14px;padding:12px 14px;margin:12px 0;font-size:15px}
+.aviso button{background:none;border:0;color:#fff;text-decoration:underline;padding:0;font-weight:600}
+.vacio{text-align:center;padding:30px 8px;color:var(--mu)}
+.vacio b{color:var(--tx)}
+.cargando{padding:30px;text-align:center;color:var(--mu)}
+.mas{display:block;margin:16px auto}
+/* barra inferior */
+#mini{position:fixed;z-index:6;left:8px;right:8px;bottom:calc(70px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:6px;background:#1d1d27;border-radius:14px;padding:6px;box-shadow:0 6px 24px #0008;max-width:744px;margin:0 auto}
+#mini img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--s2)}
+#mini .ico{color:var(--tx)}
+#mini .ico.on{color:var(--ac)}
+#mini progress{position:absolute;left:12px;right:12px;bottom:0;height:2px;width:calc(100% - 24px);appearance:none;border:0;background:transparent}
+#mini progress::-webkit-progress-bar{background:transparent}
+#mini progress::-webkit-progress-value{background:var(--ac)}
+#mini progress::-moz-progress-bar{background:var(--ac)}
+nav{position:fixed;z-index:6;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);background:#0e0e14;border-top:1px solid var(--ln);padding-bottom:env(safe-area-inset-bottom)}
+nav button{height:62px;border:0;background:none;color:var(--mu);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px}
+nav button.on{color:var(--tx)}
+nav button.on svg{color:var(--ac)}
+/* pantallas completas */
+.pantalla{position:fixed;inset:0;z-index:20;background:var(--bg);overflow-y:auto;padding:calc(8px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom))}
+.pantalla .barra-top{display:flex;align-items:center;justify-content:space-between;color:var(--mu);font-size:14px;max-width:560px;margin:0 auto}
+#player .cuerpo{max-width:560px;margin:0 auto;text-align:center}
+#p-img{width:min(78vw,340px);aspect-ratio:1;border-radius:16px;object-fit:cover;background:var(--s2);margin:12px auto 16px;display:block;box-shadow:0 12px 40px #000a}
+#p-tit{font-size:22px;margin:0 0 4px}
+#p-art{color:var(--mu);margin:0 0 14px}
+#barra{width:100%;accent-color:var(--ac);height:28px}
+.tiempos{display:flex;justify-content:space-between;color:var(--mu);font-size:13px;margin-top:-4px}
+.controles{display:flex;align-items:center;justify-content:space-between;margin:10px 0}
+.controles .ico{width:56px;height:56px;color:var(--tx)}
+.controles .ico svg{width:32px;height:32px}
+.controles .ico.on{color:var(--ac)}
+.controles .ico.tenue{color:var(--mu)}
+#p-play{width:76px;height:76px;background:var(--tx);color:var(--bg)}
+#p-play svg{width:42px;height:42px}
+.acciones{display:flex;justify-content:center;gap:28px;margin-bottom:8px}
+.acciones .ico svg{width:28px;height:28px}
+#cola{text-align:left}
+dialog{background:var(--s1);color:var(--tx);border:1px solid var(--s2);border-radius:18px;padding:16px;width:min(92vw,420px)}
+dialog::backdrop{background:#000b}
+dialog h3{margin:0 0 10px}
+.opc{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:52px;border:0;border-bottom:1px solid var(--s2);background:none;text-align:left;font-size:17px;padding:0 4px}
+.opc small{color:var(--mu)}
+.opc.cancelar{color:var(--mu);justify-content:center;border:0}
+#toast{position:fixed;z-index:30;left:50%;bottom:calc(140px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;max-width:90vw;text-align:center;box-shadow:0 6px 20px #0008}
+#ajustes .cuerpo{max-width:560px;margin:0 auto}
+#ajustes p{color:var(--mu)}
+#ajustes ol{color:var(--mu);padding-left:20px}
+#ajustes a{color:var(--ac2)}
+.fila-form{display:flex;gap:8px;margin:8px 0}
+.peligro{color:#ff8a8a;border-color:#5a2020}
+.listas .lista-item{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;border:0;border-bottom:1px solid var(--ln);background:none;text-align:left;font-size:17px;padding:0}
+.lista-item .cuadro{width:52px;height:52px;border-radius:8px;background:var(--s2);display:grid;place-items:center;color:var(--ac)}
+.acciones-lista{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+</style>
+</head>
+<body>
+<svg hidden xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></symbol>
+  <symbol id="i-repeat1" viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4zm-4-2V9h-1l-2 1v1h1.5v4H13z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></symbol>
+  <symbol id="i-add" viewBox="0 0 24 24"><path d="M14 10H2v2h12v-2zm0-4H2v2h12V6zm4 8v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM2 16h8v-2H2v2z"/></symbol>
+  <symbol id="i-del" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.48.48 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 00-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z"/></symbol>
+  <symbol id="i-explore" viewBox="0 0 24 24"><path d="M12 10.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm2.19 12.19L6 18l3.81-8.19L18 6l-3.81 8.19z"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+  <symbol id="i-lists" viewBox="0 0 24 24"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></symbol>
+  <symbol id="i-down-arrow" viewBox="0 0 24 24"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></symbol>
+  <symbol id="i-fire" viewBox="0 0 24 24"><path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z"/></symbol>
+  <symbol id="i-install" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></symbol>
+</svg>
+
+<header>
+  <h1 id="titulo">Descubrir</h1>
+  <button id="instalar" class="boton" hidden><svg class="i"><use href="#i-install"/></svg>Instalar</button>
+  <button class="ico" data-abrir="ajustes" aria-label="Ajustes"><svg class="i"><use href="#i-gear"/></svg></button>
+</header>
+
+<main>
+  <!-- DESCUBRIR -->
+  <section id="v-descubrir">
+    <div id="aviso-clave" class="aviso" hidden>Jamendo, la fuente principal, todavía no está activa. <button data-abrir="ajustes">Pon tu clave aquí</button>. Mientras tanto suena música de Audius e Internet Archive.</div>
+    <span class="et">Género</span>
+    <div class="chips" id="generos"></div>
+    <span class="et">Años</span>
+    <div class="chips" id="decadas"></div>
+    <div class="rango">
+      <label>Desde <select id="desde"></select></label>
+      <label>Hasta <select id="hasta"></select></label>
+    </div>
+    <span class="et">Cantante o artista</span>
+    <input id="artista" type="search" list="sugerencias" placeholder="Escribe un nombre (opcional)" autocomplete="off" enterkeyhint="search">
+    <datalist id="sugerencias"></datalist>
+
+    <div class="grandes">
+      <button class="grande" id="btn-mix"><svg class="i"><use href="#i-shuffle"/></svg>Escuchar mix</button>
+      <button class="grande alt" id="btn-top"><svg class="i"><use href="#i-fire"/></svg>Lo más sonado</button>
+    </div>
+    <h2 id="titulo-res">Para descubrir</h2>
+    <p class="nota" id="nota-res"></p>
+    <div id="res"></div>
+    <button class="boton mas" id="ver-mas" hidden>Ver más canciones</button>
+  </section>
+
+  <!-- PARA TI -->
+  <section id="v-parati" hidden>
+    <p class="nota" id="pt-nota"></p>
+    <div class="grandes"><button class="grande" id="pt-play" style="grid-column:1/-1"><svg class="i"><use href="#i-play"/></svg>Escuchar Para ti</button></div>
+    <div id="pt-res"></div>
+  </section>
+
+  <!-- FAVORITOS -->
+  <section id="v-favoritos" hidden>
+    <p class="nota">Todas las canciones que marcaste con "me gusta".</p>
+    <div class="acciones-lista">
+      <button class="boton" data-reproducir="favoritos"><svg class="i"><use href="#i-play"/></svg>Reproducir</button>
+      <button class="boton" data-reproducir="favoritos" data-aleatorio><svg class="i"><use href="#i-shuffle"/></svg>Aleatorio</button>
+    </div>
+    <div id="fav-res"></div>
+  </section>
+
+  <!-- LISTAS -->
+  <section id="v-listas" hidden>
+    <div id="listas-res"></div>
+  </section>
+</main>
+
+<div id="mini" hidden>
+  <img id="m-img" alt="">
+  <div class="txt" id="m-abrir"><b id="m-tit"></b><small id="m-art"></small></div>
+  <button class="ico" id="m-si" aria-label="Me gusta"><svg class="i"><use href="#i-up"/></svg></button>
+  <button class="ico" id="m-play" aria-label="Reproducir o pausar"><svg class="i"><use href="#i-play"/></svg></button>
+  <button class="ico" id="m-sig" aria-label="Siguiente"><svg class="i"><use href="#i-next"/></svg></button>
+  <progress id="m-prog" max="1" value="0"></progress>
+</div>
+
+<nav>
+  <button data-tab="descubrir" class="on"><svg class="i"><use href="#i-explore"/></svg>Descubrir</button>
+  <button data-tab="parati"><svg class="i"><use href="#i-star"/></svg>Para ti</button>
+  <button data-tab="favoritos"><svg class="i"><use href="#i-heart"/></svg>Favoritos</button>
+  <button data-tab="listas"><svg class="i"><use href="#i-lists"/></svg>Listas</button>
+</nav>
+
+<!-- REPRODUCTOR COMPLETO -->
+<div id="player" class="pantalla" hidden>
+  <div class="barra-top">
+    <button class="ico" data-cerrar="player" aria-label="Cerrar"><svg class="i"><use href="#i-down-arrow"/></svg></button>
+    <span id="p-fuente">Reproduciendo</span>
+    <button class="ico" id="p-lista" aria-label="Añadir a una lista"><svg class="i"><use href="#i-add"/></svg></button>
+  </div>
+  <div class="cuerpo">
+    <img id="p-img" alt="">
+    <h2 id="p-tit"></h2>
+    <p id="p-art"></p>
+    <input type="range" id="barra" min="0" max="1000" value="0" aria-label="Progreso">
+    <div class="tiempos"><span id="t-act">0:00</span><span id="t-tot">0:00</span></div>
+    <div class="controles">
+      <button class="ico" id="p-alea" aria-label="Aleatorio"><svg class="i"><use href="#i-shuffle"/></svg></button>
+      <button class="ico" id="p-ant" aria-label="Anterior"><svg class="i"><use href="#i-prev"/></svg></button>
+      <button class="ico" id="p-play" aria-label="Reproducir o pausar"><svg class="i"><use href="#i-play"/></svg></button>
+      <button class="ico" id="p-sig" aria-label="Siguiente"><svg class="i"><use href="#i-next"/></svg></button>
+      <button class="ico" id="p-rep" aria-label="Repetir"><svg class="i"><use href="#i-repeat"/></svg></button>
+    </div>
+    <div class="acciones">
+      <button class="ico" id="p-no" aria-label="No me gusta"><svg class="i"><use href="#i-down"/></svg></button>
+      <button class="ico" id="p-si" aria-label="Me gusta"><svg class="i"><use href="#i-up"/></svg></button>
+    </div>
+    <h2 style="text-align:left">A continuación</h2>
+    <div id="cola"></div>
+  </div>
+</div>
+
+<!-- AJUSTES -->
+<div id="ajustes" class="pantalla" hidden>
+  <div class="barra-top">
+    <button class="ico" data-cerrar="ajustes" aria-label="Volver"><svg class="i"><use href="#i-back"/></svg></button>
+    <span>Ajustes</span><span style="width:44px"></span>
+  </div>
+  <div class="cuerpo">
+    <h2>Clave de Jamendo</h2>
+    <p>Jamendo es la fuente principal (música libre y completa). Necesita una clave gratis:</p>
+    <ol>
+      <li>Entra a <a href="https://devportal.jamendo.com" target="_blank" rel="noopener">devportal.jamendo.com</a> y crea una cuenta gratis.</li>
+      <li>En "My Applications", crea una aplicación (nombre: Mi Música).</li>
+      <li>Copia el "Client ID" y pégalo aquí.</li>
+    </ol>
+    <div class="fila-form">
+      <input type="text" id="clave" placeholder="Client ID de Jamendo" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button class="boton" id="guardar-clave">Guardar</button>
+    </div>
+    <p id="estado-clave"></p>
+    <h2>Mis datos</h2>
+    <p>Tus me gusta, favoritos y listas se guardan solo en este celular. No hay cuentas, anuncios ni rastreadores.</p>
+    <button class="boton peligro" id="borrar-gustos"><svg class="i"><use href="#i-del"/></svg>Borrar mis me gusta y no me gusta</button>
+    <h2>Fuentes</h2>
+    <p>Jamendo y Audius (música publicada por sus artistas para escucharla gratis) e Internet Archive (solo grabaciones de dominio público o con licencia Creative Commons).</p>
+  </div>
+</div>
+
+<dialog id="dlg"></dialog>
+<div id="toast" hidden></div>
+<audio id="audio" preload="auto"></audio>
+<script type="module" src="app.js"></script>
+</body>
+</html>
